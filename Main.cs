@@ -48,19 +48,19 @@ namespace CommandDelay
 
         public override void Initialize()
         {
-            ServerApi.Hooks.GameInitialize.Register(this, (args) => { OnInitialize(); });
+            ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                ServerApi.Hooks.GameInitialize.Deregister(this, (args) => { OnInitialize(); });
+                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
             }
             base.Dispose(disposing);
         }
 
-        public void OnInitialize()
+        public void OnInitialize(EventArgs args)
         {
             //Commands.ChatCommands.Add(new Command("permission", Method, "command"));
             Commands.ChatCommands.Add(new Command("commanddelay", DelayCMD, "delay"));
@@ -74,11 +74,7 @@ namespace CommandDelay
             if (args.Parameters.Count > 1)
             {
                 int interval;
-                try
-                {
-                    interval = Convert.ToInt32(args.Parameters[0]);
-                }
-                catch(Exception error)
+                if (!int.TryParse(args.Parameters[0], out interval))
                 {
                     player.SendErrorMessage("Input interval was not a number.");
                     return;
@@ -119,9 +115,15 @@ namespace CommandDelay
             try
             {
                 TSPlayer player = args.Player;
+                Group group = player.Group;
+                player.Group = new SuperAdminGroup();
                 Commands.HandleCommand(player, command);
+                player.Group = group;
             }
-            catch(Exception error){}
+            catch(Exception error)
+            {
+                //Player probably doesn't exist anymore
+            }
         }
     }
 }
