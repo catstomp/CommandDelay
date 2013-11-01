@@ -22,3 +22,4 @@ C:\Users\Zac\Documents\TerrariaFolder\tShock\My Plugins (and modified ones)\Comm
 C:\Users\Zac\Documents\TerrariaFolder\tShock\My Plugins (and modified ones)\CommandDelay (1,14)\obj\Release\CommandDelay.csprojResolveAssemblyReference.cache
 C:\Users\Zac\Documents\TerrariaFolder\tShock\My Plugins (and modified ones)\CommandDelay (1,14)\obj\Release\CommandDelay.dll
 C:\Users\Zac\Documents\TerrariaFolder\tShock\My Plugins (and modified ones)\CommandDelay (1,14)\obj\Release\CommandDelay.pdb
+C:\Users\Zac\Documents\TerrariaFolder\tShock\My Plugins (and modified ones)\CommandDelay (1,14)\bin\Release\NCalc.dll

@@ -13,6 +13,7 @@ using TShockAPI;
 using TShockAPI.DB;
 using Mono.Data.Sqlite;
 using MySql.Data.MySqlClient;
+using NCalc;
 
 
 namespace CommandDelay
@@ -22,7 +23,7 @@ namespace CommandDelay
     {
         public override Version Version
         {
-            get { return new Version(1, 0, 0); }
+            get { return new Version(1, 1, 0); }
         }
 
         public override string Name
@@ -59,17 +60,30 @@ namespace CommandDelay
             }
             base.Dispose(disposing);
         }
+        
+        public string SyntaxErrorPrefix = "Invalid syntax! Proper usage: ";
+        public bool ncalcenabled = true;
+
+        public void Setup()
+        {
+            if (!File.Exists(Path.Combine("ServerPlugins", "NCalc.dll")))
+            {
+                ncalcenabled = false;
+            }
+        }
 
         public void OnInitialize(EventArgs args)
         {
             Commands.ChatCommands.Add(new Command("commanddelay", DelayCMD, "delay"));
+            Commands.ChatCommands.Add(new Command("commandloop", LoopCMD, "loop"));
+            Commands.ChatCommands.Add(new Command("calculate", calcCMD, "calc"));
+            Setup();
         }
-        public string SyntaxErrorPrefix = "Invalid syntax! Proper usage: ";
 
         public void DelayCMD(CommandArgs args)
         {
             TSPlayer player = args.Player;
-            
+
             if (args.Parameters.Count > 1)
             {
                 int interval;
@@ -85,6 +99,73 @@ namespace CommandDelay
             else
             {
                 player.SendErrorMessage(SyntaxErrorPrefix + "/delay <interval> <command>");
+                return;
+            }
+        }
+        public void LoopCMD(CommandArgs args)
+        {
+            TSPlayer player = args.Player;
+
+            if (args.Parameters.Count > 1)
+            {
+                int amount;
+                if (!int.TryParse(args.Parameters[0], out amount))
+                {
+                    player.SendErrorMessage("Input amount was not a number.");
+                    return;
+                }
+                else
+                {
+                    var parameters = args.Parameters;
+                    parameters.RemoveAt(0);
+                    string command = String.Join(" ", args.Parameters);
+                    if (!command.StartsWith("/"))
+                    {
+                        command = "/" + command;
+                    }
+                    for (int i = 0; i <= amount; i++)
+                    {
+                        Group group = player.Group;
+                        player.Group = new SuperAdminGroup();
+                        Commands.HandleCommand(player, command);
+                        if (!command.StartsWith("/user group " + player.UserAccountName))
+                        {
+                            player.Group = group;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                player.SendErrorMessage(SyntaxErrorPrefix + "/loop <amount> <command>");
+                return;
+            }
+        }
+        public void calcCMD(CommandArgs args)
+        {
+            TSPlayer player = args.Player;
+            if (!ncalcenabled)
+            {
+                player.SendErrorMessage("This feature does not work when the NCalc addon is not installed.");
+                return;
+            }
+            else if (args.Parameters.Count > 0)
+            {
+                try
+                {
+                    Expression e = new Expression(string.Join(" ", args.Parameters));
+                    object result = e.Evaluate();
+                    player.SendSuccessMessage("Ans=" + result);
+                }
+                catch (Exception e)
+                {
+                    player.SendErrorMessage("Calculator Error: Please enter a correct math equation.");
+                    return;
+                }
+            }
+            else
+            {
+                player.SendErrorMessage(SyntaxErrorPrefix + "/calc <equation>");
                 return;
             }
         }
@@ -117,9 +198,12 @@ namespace CommandDelay
                 Group group = player.Group;
                 player.Group = new SuperAdminGroup();
                 Commands.HandleCommand(player, command);
-                player.Group = group;
+                if (!command.StartsWith("/user group " + player.UserAccountName))
+                {
+                    player.Group = group;
+                }
             }
-            catch(Exception error)
+            catch(Exception e)
             {
                 //Player probably doesn't exist anymore
             }

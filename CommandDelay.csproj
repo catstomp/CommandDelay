@@ -40,6 +40,9 @@
     <Reference Include="MySql.Data">
       <HintPath>..\..\..\TearBox\ServerPlugins\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="NCalc">
+      <HintPath>Refs\NCalc.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\TearBox\ServerPlugins\Newtonsoft.Json.dll</HintPath>
     </Reference>
