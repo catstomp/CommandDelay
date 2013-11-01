@@ -43,7 +43,7 @@ namespace CommandDelay
         public CommandDelay(Main game)
             : base(game)
         {
-            Order = 333;
+            Order = 334;
         }
 
         public override void Initialize()
@@ -62,7 +62,6 @@ namespace CommandDelay
 
         public void OnInitialize(EventArgs args)
         {
-            //Commands.ChatCommands.Add(new Command("permission", Method, "command"));
             Commands.ChatCommands.Add(new Command("commanddelay", DelayCMD, "delay"));
         }
         public string SyntaxErrorPrefix = "Invalid syntax! Proper usage: ";
