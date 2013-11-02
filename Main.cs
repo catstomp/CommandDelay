@@ -212,7 +212,7 @@ namespace CommandDelay
                             {
                                 state = "paused";
                             }
-                            list += String.Format("({0}): {1}", i, state);
+                            list += String.Format("({0}): {1}{2}", (i + 1), state, (i != threads.Count - 1 ? ", " : ""));
                         }
                         player.SendSuccessMessage("Current loops:");
                         player.SendInfoMessage(list.Length > 0 ? list : "There are no loops running.");
@@ -519,6 +519,10 @@ namespace CommandDelay
                     {
                         player.Group = group;
                     }
+                }
+                if (CommandDelay.threads.Count >= threadid)
+                {
+                    CommandDelay.threads.RemoveAt(threadid);
                 }
             }
             catch (Exception e){}
