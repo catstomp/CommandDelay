@@ -202,7 +202,7 @@ namespace CommandDelay
             {
                 if (args.Parameters[0] == "list")
                 {
-                    if (player.Group.HasPermission("commanddelay.manage"))
+                    if (player.Group.HasPermission("execute.manage"))
                     {
                         var list = "";
                         for (int i = 0; i < threads.Count; i++)
@@ -232,7 +232,7 @@ namespace CommandDelay
             }
             else if (args.Parameters.Count == 2)
             {
-                if (player.Group.HasPermission("commanddelay.manage"))
+                if (player.Group.HasPermission("execute.manage"))
                 {
                     if (args.Parameters[0] == "stop")
                     {
@@ -492,8 +492,8 @@ namespace CommandDelay
                     }
                     command = command.Replace("%i", "" + (i));
                     command = command.Replace("" + (i - 1), "" + (i));
-                    command = command.Replace("%-i", "" + (amount - i));
-                    command = command.Replace("" + (amount - i + 1), "" + (amount - i));
+                    //command = command.Replace("%-i", "" + (j));
+                    //command = command.Replace("" + (amount - j + 1), "" + (amount - j));
                     seconds = interval;
                     while (seconds-- > 0)
                     {
@@ -504,7 +504,7 @@ namespace CommandDelay
                             return;
                         while (CommandDelay.threads[threadid] == 1)
                         {
-                            //Waits until the loop is resumed, is this okay to do?
+                            //Waiting until the loop is resumed, is this okay to do?
                             if (Netplay.disconnect || CommandDelay.threads[threadid] == -1)
                                 return;
                         }
