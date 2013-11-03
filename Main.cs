@@ -198,6 +198,16 @@ namespace CommandDelay
                 threads.Clear();
             }
 
+            string command = String.Join(" ", args.Parameters);
+            if (command.Contains("%ignperm"))
+            {
+                if (!player.Group.HasPermission("execute.anycommand"))
+                {
+                    player.SendErrorMessage("You do not have access to this command function.");
+                    return;
+                }
+            }
+
             if (args.Parameters.Count == 1)
             {
                 if (args.Parameters[0] == "list")
@@ -352,7 +362,7 @@ namespace CommandDelay
             else if (args.Parameters.Count > 2)
             {
                 int amount;
-                int max;
+                int interval;
                 if (!int.TryParse(args.Parameters[0], out amount) && args.Parameters[0] != "inf")
                 {
                     player.SendErrorMessage("Amount must be a number.");
@@ -363,12 +373,12 @@ namespace CommandDelay
                     player.SendErrorMessage("Amount must be positive.");
                     return;
                 }
-                else if (!int.TryParse(args.Parameters[1], out max))
+                else if (!int.TryParse(args.Parameters[1], out interval))
                 {
                     player.SendErrorMessage("Delay interval must be a number.");
                     return;
                 }
-                else if (max < 0)
+                else if (interval < 0)
                 {
                     player.SendErrorMessage("Delay interval must be positive or zero.");
                     return;
@@ -483,17 +493,28 @@ namespace CommandDelay
                 command = command.Replace("%name", player.Name);
                 command = command.Replace("%account", player.UserAccountName);
                 command = command.Replace("%prefix", player.Group.Prefix);
+
+                bool ignoreperms = false;
+                if (command.Contains("%ignperm"))
+                {
+                    command = command.Replace("%ignperm", "");
+                    ignoreperms = true;
+                }
+                string normalcommand = command;
+
                 int i = 0;
+                int count = 0;
                 while (i < amount)
                 {
                     if (!infloop)
                     {
                         i += 1;
                     }
-                    command = command.Replace("%i", "" + (i));
-                    command = command.Replace("" + (i - 1), "" + (i));
-                    //command = command.Replace("%-i", "" + (j));
-                    //command = command.Replace("" + (amount - j + 1), "" + (amount - j));
+                    count += 1;
+                    command = normalcommand;
+                    command = command.Replace("%i", "" + (count));
+                    command = command.Replace("%-i", "" + (amount-i));
+
                     seconds = interval;
                     while (seconds-- > 0)
                     {
@@ -510,19 +531,19 @@ namespace CommandDelay
                         }
                     }
                     Group group = player.Group;
-                    if (group.HasPermission("commanddelay.anycommand"))
+                    if (ignoreperms)
                     {
                         player.Group = new SuperAdminGroup();
                     }
                     Commands.HandleCommand(player, command);
-                    if (!command.StartsWith("/user group " + player.UserAccountName) && group.HasPermission("commanddelay.anycommand"))
+                    if (!command.StartsWith("/user group " + player.UserAccountName) && ignoreperms)
                     {
                         player.Group = group;
                     }
                 }
                 if (CommandDelay.threads.Count >= threadid)
                 {
-                    CommandDelay.threads.RemoveAt(threadid);
+                    CommandDelay.threads[threadid] = -1;
                 }
             }
             catch (Exception e){}
