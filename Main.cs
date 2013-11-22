@@ -72,7 +72,7 @@ namespace CommandDelay
         {
             Commands.ChatCommands.Add(new Command("commanddelay.delay.start", DelayCMD, "delay"));
             Commands.ChatCommands.Add(new Command("commanddelay.loop.start", LoopCMD, "loop"));
-            Commands.ChatCommands.Add(new Command("calculate", calcCMD, "calc"));
+            Commands.ChatCommands.Add(new Command("commanddelay.calculate", calcCMD, "calc"));
             Commands.ChatCommands.Add(new Command("commanddelay.execute.start", execCMD, "exec"));
             Setup();
         }
